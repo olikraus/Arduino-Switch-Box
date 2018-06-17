@@ -27,7 +27,7 @@
 #define BULB1 6
 #define BULB0 9
 
-#define ANALOG_WRITE_BULB 70
+#define ANALOG_WRITE_BULB 48
 
 #define SWITCH3 3
 #define SWITCH2 4
@@ -364,8 +364,13 @@ void write_switch_to_light(void)
 {
   uint8_t i, j;
   uint8_t bulb[4];
+
+  static uint8_t old_bulb[4];
+  
   for( i = 0; i < 4; i++ )
+  {
     bulb[i] = 0;
+  }
   
   /*
   for( i = 0; i < 4; i++ )
@@ -401,12 +406,45 @@ void write_switch_to_light(void)
   */
 
   for( i = 0; i < 4; i++ )
+  {
     if ( bulb[i] != 0 )
-      analogWrite(light_to_pin[i], ANALOG_WRITE_BULB);
+    {
+      if ( old_bulb[i] != bulb[i] )
+      {
+        analogWrite(light_to_pin[i], ANALOG_WRITE_BULB/4);
+      }
+    }
     else
+    {
       analogWrite(light_to_pin[i], 0);
+    }
+  }
+  delay(1);
+  for( i = 0; i < 4; i++ )
+  {
+    if ( bulb[i] != 0 )
+    {
+      if ( old_bulb[i] != bulb[i] )
+      {
+        analogWrite(light_to_pin[i], ANALOG_WRITE_BULB/2);
+      }
+    }
+  }
+  delay(1);
+  for( i = 0; i < 4; i++ )
+  {
+    if ( bulb[i] != 0 )
+    {
+      if ( old_bulb[i] != bulb[i] )
+      {
+        analogWrite(light_to_pin[i], ANALOG_WRITE_BULB);
+        delay(1);
+      }
+    }
+  }
 
-    
+  for( i = 0; i < 4; i++ )
+    old_bulb[i] = bulb[i];
 
   
 }
